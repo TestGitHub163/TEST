@@ -7,41 +7,64 @@
 
 import UIKit
 
-enum Cover: String {
-    case avengers = "Avengers Endgame cover"
-    case badBoys = "Bad boys 2 cover"
-    case onePlusOne = "1+1 cover"
-    case mirror = "Black mirror cover"
-    
-    static let arrCover = [avengers, badBoys, onePlusOne, mirror]
+protocol SetTextDelegate {
+    func setText(with text:UITextField)
 }
-
-let arrCover = ["Avengers Endgame cover", "Bad boys 2 cover", "1+1 cover", "Black mirror cover"]
-
 
 class FirstViewController: UIViewController {
 
+    var arrayReviews:[String] = ["d"]
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var textLabel: UILabel!
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print(arrayReviews.count)
+        tableView.reloadData()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.dataSource = self
+        tableView.delegate = self
         
-        
-    }
-
-}
-
-extension FirstViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        2
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let secondVC = segue.destination as? SecondViewController else { return }
+        secondVC.delegate = self
+    }
+    
+    @IBAction func saveButton() {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CollectionViewCell
-        cell.coverImage.image = UIImage(named: Cover.arrCover[indexPath.row].rawValue
-        )
+    }
+    
+    
+    
+
+    
+}
+
+extension FirstViewController: UITableViewDataSource, UITableViewDelegate{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        arrayReviews.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        var content = cell.defaultContentConfiguration()
+        content.text = arrayReviews[indexPath.row]
+        cell.contentConfiguration = content
         return cell
     }
     
     
 }
+
+extension FirstViewController: SetTextDelegate {
+    func setText(with text: UITextField) {
+        arrayReviews.append(text.text!)
+    }
+}
+
